@@ -8,22 +8,22 @@ from sqlalchemy.orm import Session
 from app.db.database import SessionLocal
 from app.db.models import User
 from app.api.repositories.users import UsersRepository
-from app.api.serializers.users import CreateUser
+from app.api.serializers.users import CreateUser, ModifyUser, UserReponse
 
 router = APIRouter()
 users_repository = UsersRepository()
-oath2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")\
+oath2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/users/login")
     
 
 
 # JWT part
 def create_jwt(user_id: int) -> str:
     body = {"user_id": user_id}
-    token = jwt.encode(body, "flower-secret", algorithm="HS256")
+    token = jwt.encode(body, "shanyrak-secret", algorithm="HS256")
     return token
     
 def decode_jwt(token: str) -> int:
-    data = jwt.decode(token, "flower-secret", algorithms="HS256") # json
+    data = jwt.decode(token, "shanyrak-secret", algorithms="HS256")
     return data["user_id"]
 
 
@@ -46,16 +46,36 @@ def post_signup(
 
 
 # 2.Login
-# @router.post("/login")
-# def post_login(
-#     username: str = Form(), 
-#     password: str = Form(),
-#     db: Session = Depends(get_db)
-# ):
-#     user = users_repository.get_by_email(db, username)
+@router.post("/users/login")
+def post_login(
+    username: str = Form(), 
+    password: str = Form(),
+    db: Session = Depends(get_db)
+):
+    user = users_repository.get_by_email(db, username)
     
-#     if user.password == password:
-#         token = create_jwt(user.id)
-#         return {"access_token": token, "type": "bearer"}
+    if user.password == password:
+        token = create_jwt(user.id)
+        return {"access_token": token}
     
-#     raise HTTPException(status_code=401, detail="Invalid password")
+    raise HTTPException(status_code=401, detail="Invalid password")
+
+
+@router.patch("/users/me")
+def patch_user(
+    user_data: ModifyUser, 
+    token: str = Depends(oath2_scheme),
+    db: Session = Depends(get_db)
+):
+    user_id = decode_jwt(token)
+    users_repository.update_user(db, user_id, user_data)
+    return Response(content="User updated", status_code=200)
+
+@router.get("/users/me")
+def get_user(token: str = Depends(oath2_scheme), db: Session = Depends(get_db)):
+    user_id = decode_jwt(token)
+    user = users_repository.get_by_id(db, user_id)
+    user.phone = user.phone[4:].replace("-", " ")
+    print(user.phone)
+    
+    return UserReponse.model_validate(user.__dict__)
