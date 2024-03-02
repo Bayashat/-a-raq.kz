@@ -22,9 +22,10 @@ class UsersRepository:
             db.add(user)
             db.commit()
             db.refresh(user)
-        except IntegrityError:
+        except Exception as e:
+            # Handle exceptions (e.g., database errors, custom exceptions)
             db.rollback()
-            raise HTTPException(status_code=400, detail="User already exists")
+            raise e
         
         return user.id
     
