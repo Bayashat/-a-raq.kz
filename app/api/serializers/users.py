@@ -10,12 +10,14 @@ class CreateUser(BaseModel):
     name: str
     city: str
     
+
 class ModifyUser(BaseModel):
     username: EmailStr | None = None
     phone: PhoneNumber | None = None
     password: str | None = None
     name: str | None = None
     city: str | None = None
+    
     
 class UserReponse(BaseModel):
     id: int
@@ -24,3 +26,4 @@ class UserReponse(BaseModel):
     password: str
     name: str
     city: str
+
