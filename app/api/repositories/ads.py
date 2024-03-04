@@ -1,7 +1,8 @@
 from sqlalchemy.orm import Session
 
 from app.db.models import Ad
-from app.api.serializers.ads import CreateAd
+from sqlite3 import IntegrityError
+from app.api.serializers.ads import CreateAd, ModifyAd
 from fastapi import HTTPException
 
 
@@ -39,3 +40,21 @@ class AdRepository:
         except Exception as e:
             db.rollback()
             raise e
+                
+            
+    @staticmethod
+    def update_ad(db: Session, ad_id: int, ad_data: ModifyAd):
+        db_ad = db.query(Ad).filter(Ad.id == ad_id).first()
+        
+        if db_ad is None:
+            raise HTTPException(status_code=404, detail="Ad not found")
+        else:
+            for key, value in ad_data.model_dump(exclude_unset=True).items():
+                setattr(db_ad, key, value)
+                
+        try:
+            db.commit()
+            db.refresh(db_ad)
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="Invalid ad data")
