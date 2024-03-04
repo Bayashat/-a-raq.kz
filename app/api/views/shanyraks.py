@@ -1,9 +1,9 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 
 from sqlalchemy.orm import Session
 
 from app.api.repositories.ads import AdRepository
-from app.api.serializers.ads import CreateAd, AdResponse
+from app.api.serializers.ads import CreateAd, AdResponse, ModifyAd
 from .auth import oath2_scheme, decode_jwt, get_db
 
 router = APIRouter()
@@ -29,3 +29,13 @@ def get_ad(
     db_ad = ad_repository.get_ad(db, id)
 
     return AdResponse.model_validate(db_ad.__dict__)
+
+
+@router.patch("/{id}")
+def update_ad(
+    id: int,
+    ad_data: ModifyAd,
+    db: Session = Depends(get_db)
+):
+    ad_repository.update_ad(db, id, ad_data)
+    return Response(content="Ad updated", status_code=200)
