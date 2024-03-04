@@ -76,6 +76,5 @@ def get_user(token: str = Depends(oath2_scheme), db: Session = Depends(get_db)):
     user_id = decode_jwt(token)
     user = users_repository.get_by_id(db, user_id)
     user.phone = user.phone[4:].replace("-", " ")
-    print(user.phone)
     
     return UserReponse.model_validate(user.__dict__)
