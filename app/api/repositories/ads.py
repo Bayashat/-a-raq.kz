@@ -1,6 +1,5 @@
 from sqlalchemy.orm import Session
 
-from sqlite3 import IntegrityError
 from app.db.models import Ad
 from app.api.serializers.ads import CreateAd
 from fastapi import HTTPException
@@ -28,5 +27,15 @@ class AdRepository:
             return ad.id
         except Exception as e:
             # Handle exceptions (e.g., database errors, custom exceptions)
+            db.rollback()
+            raise e
+        
+    @staticmethod
+    def get_ad(db: Session, ad_id: int):
+        try:
+            # try to query if the ad exist
+            db_ad = db.query(Ad).filter(Ad.id == ad_id).first()
+            return db_ad
+        except Exception as e:
             db.rollback()
             raise e
