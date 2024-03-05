@@ -12,7 +12,7 @@ class User(Base, IdMixin):
     __tablename__ = "users"
     
     username = Column(String,unique=True, nullable=False)
-    phone = Column(String, nullable=False)
+    phone = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
     name = Column(String, nullable=False)
     city = Column(String, nullable=False)
