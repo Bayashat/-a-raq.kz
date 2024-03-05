@@ -26,4 +26,21 @@ class CommentRepository:
         db.add(new_comment)
         db.commit()
         db.refresh(new_comment)
-        print("YES")
+        
+    @staticmethod
+    def get_comment(db: Session, user_id: int, ad_id: int) -> list[Comment]:
+        # Query User and Ad
+        user = db.query(User).filter(User.id == user_id).first()
+        ad = db.query(Ad).filter(Ad.id == ad_id).first()
+        
+        if not user or not ad:
+            raise HTTPException(status_code=404, detail="Not found such User or Ad")
+
+        comments = db.query(Comment).filter(
+            Comment.user_id == user_id,
+            Comment.ad_id == ad_id
+        ).all()
+        
+        return comments
+        
+    
