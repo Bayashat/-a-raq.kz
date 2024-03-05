@@ -14,8 +14,7 @@ class CommentRepository:
         ad = db.query(Ad).filter(Ad.id == ad_id).first()
         
         if not user or not ad:
-            return HTTPException(status_code=404, detail="Not found such User or Ad")
-        
+            raise HTTPException(status_code=404, detail="Not found such User or Ad")
         # Create Comment
         new_comment = Comment(
             content = comment_data.content,
@@ -27,3 +26,4 @@ class CommentRepository:
         db.add(new_comment)
         db.commit()
         db.refresh(new_comment)
+        print("YES")
