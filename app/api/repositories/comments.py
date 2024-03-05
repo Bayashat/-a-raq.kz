@@ -8,7 +8,7 @@ from fastapi import HTTPException
 
 class CommentRepository:
     @staticmethod
-    def create_ad(db: Session, user_id: int, ad_id: int, comment_data: AddComment):
+    def create_comment(db: Session, user_id: int, ad_id: int, comment_data: AddComment):
         # Query User and Ad
         user = db.query(User).filter(User.id == user_id).first()
         ad = db.query(Ad).filter(Ad.id == ad_id).first()

@@ -65,5 +65,5 @@ def post_comment(
     db: Session = Depends(get_db)
 ):
     user_id = decode_jwt(token)
-    comment_repository.create_ad(db, user_id, id, comment)
+    comment_repository.create_comment(db, user_id, id, comment)
     return Response(content="Success", status_code=200)
