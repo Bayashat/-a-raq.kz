@@ -33,7 +33,7 @@ class CommentRepository:
         ad = db.query(Ad).filter(Ad.id == ad_id).first()
         
         if not ad:
-            raise HTTPException(status_code=404, detail="Not found such User or Ad")
+            raise HTTPException(status_code=404, detail="Not found such Ad")
 
         comments = db.query(Comment).filter(
             Comment.ad_id == ad_id
@@ -63,3 +63,27 @@ class CommentRepository:
         db_comment.content = comment.content
         db.commit()
         db.refresh(db_comment)
+        
+    
+    @staticmethod
+    def delete_comment(db: Session, user_id: int, ad_id: int, comment_id: int):
+        ad = db.query(Ad).filter(Ad.id == ad_id).first()
+        comment = db.query(Comment).filter(Comment.id == comment_id).first()
+        if not ad or not comment:
+            raise HTTPException(status_code=404, detail="Not found such ad or comment")
+        
+        
+        db_comment = db.query(Comment).filter(
+            Comment.user_id == user_id,
+            Comment.ad_id == ad_id,
+            Comment.id == comment_id
+            ).first()
+        
+        if db_comment is None:
+            raise HTTPException(status_code=404, detail="It's not your comment")
+        
+        try:
+            db.delete(db_comment)
+            db.commit()
+        except Exception as e:
+            raise e
