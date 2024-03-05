@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.db.models import Comment, User, Ad
+from app.db.models import Comment, User, Post
 from app.api.serializers.comments import AddComment
 from fastapi import HTTPException
 
@@ -8,18 +8,19 @@ from fastapi import HTTPException
 
 class CommentRepository:
     @staticmethod
-    def create_comment(db: Session, user_id: int, ad_id: int, comment_data: AddComment):
-        # Query User and Ad
+    def create_comment(db: Session, user_id: int, post_id: int, comment_data: AddComment):
+        # Query User and Post
         user = db.query(User).filter(User.id == user_id).first()
-        ad = db.query(Ad).filter(Ad.id == ad_id).first()
+        post = db.query(Post).filter(Post.id == post_id).first()
         
-        if not user or not ad:
-            raise HTTPException(status_code=404, detail="Not found such User or Ad")
+        if not user or not post:
+            raise HTTPException(status_code=404, detail="Not found such User or Post")
+        
         # Create Comment
         new_comment = Comment(
             content = comment_data.content,
             user_id = user_id,
-            ad_id = ad_id
+            post_id = post_id
         )
         
         # add comment to db
@@ -28,32 +29,32 @@ class CommentRepository:
         db.refresh(new_comment)
         
     @staticmethod
-    def get_comment(db: Session, ad_id: int) -> list[Comment]:
-        # Query Ad
-        ad = db.query(Ad).filter(Ad.id == ad_id).first()
+    def get_comment(db: Session, post_id: int) -> list[Comment]:
+        # Query Post
+        post = db.query(Post).filter(Post.id == post_id).first()
         
-        if not ad:
-            raise HTTPException(status_code=404, detail="Not found such Ad")
+        if not post:
+            raise HTTPException(status_code=404, detail="Not found such Post")
 
         comments = db.query(Comment).filter(
-            Comment.ad_id == ad_id
+            Comment.post_id == post_id
         ).all()
         
         return comments
         
     
     @staticmethod
-    def update_comment(db: Session, user_id: int, ad_id: int, comment_id: int, comment: AddComment):
-        # Query User and Ad
+    def update_comment(db: Session, user_id: int, post_id: int, comment_id: int, comment: AddComment):
+        # Query User and Post
         user = db.query(User).filter(User.id == user_id).first()
-        ad = db.query(Ad).filter(Ad.id == ad_id).first()
+        post = db.query(Post).filter(Post.id == post_id).first()
         
-        if not user or not ad:
-            raise HTTPException(status_code=404, detail="Not found such User or Ad")
+        if not user or not post:
+            raise HTTPException(status_code=404, detail="Not found such User or Post")
 
         db_comment = db.query(Comment).filter(
             Comment.user_id == user_id,
-            Comment.ad_id == ad_id,
+            Comment.post_id == post_id,
             Comment.id == comment_id
             ).first()
         
@@ -66,16 +67,16 @@ class CommentRepository:
         
     
     @staticmethod
-    def delete_comment(db: Session, user_id: int, ad_id: int, comment_id: int):
-        ad = db.query(Ad).filter(Ad.id == ad_id).first()
+    def delete_comment(db: Session, user_id: int, post_id: int, comment_id: int):
+        post = db.query(Post).filter(Post.id == post_id).first()
         comment = db.query(Comment).filter(Comment.id == comment_id).first()
-        if not ad or not comment:
-            raise HTTPException(status_code=404, detail="Not found such ad or comment")
+        if not post or not comment:
+            raise HTTPException(status_code=404, detail="Not found such post or comment")
         
         
         db_comment = db.query(Comment).filter(
             Comment.user_id == user_id,
-            Comment.ad_id == ad_id,
+            Comment.post_id == post_id,
             Comment.id == comment_id
             ).first()
         

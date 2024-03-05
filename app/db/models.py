@@ -17,11 +17,11 @@ class User(Base, IdMixin):
     name = Column(String, nullable=False)
     city = Column(String, nullable=False)
     
-    ads = relationship("Ad", back_populates="user")
+    posts = relationship("Post", back_populates="user")
     comments = relationship("Comment", back_populates="user")
 
-class Ad(Base, IdMixin):
-    __tablename__ = "ads"
+class Post(Base, IdMixin):
+    __tablename__ = "posts"
     
     id = Column(Integer, primary_key=True, index=True)
     type = Column(String, index=True, nullable=False)
@@ -35,8 +35,8 @@ class Ad(Base, IdMixin):
     user_id = Column(Integer, ForeignKey('users.id'))
     
     # Relationships
-    user = relationship("User", back_populates="ads")
-    comments = relationship("Comment", back_populates="ad")
+    user = relationship("User", back_populates="posts")
+    comments = relationship("Comment", back_populates="post")
     
     
 class Comment(Base, IdMixin):
@@ -47,11 +47,11 @@ class Comment(Base, IdMixin):
     
     # Foreign keys
     user_id = Column(Integer, ForeignKey('users.id'))
-    ad_id = Column(Integer, ForeignKey('ads.id'))
+    post_id = Column(Integer, ForeignKey('posts.id'))
     
     # Relationships
     user = relationship("User", back_populates="comments")
-    ad = relationship("Ad", back_populates="comments")
+    post = relationship("Post", back_populates="comments")
     
     
     

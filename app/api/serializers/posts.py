@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class CreateAd(BaseModel):
+class CreatePost(BaseModel):
     type: str
     price: int
     address: str
@@ -10,7 +10,7 @@ class CreateAd(BaseModel):
     description: str
 
 
-class AdResponse(BaseModel):   
+class PostResponse(BaseModel):   
     id: int 
     type: str
     price: int
@@ -21,7 +21,7 @@ class AdResponse(BaseModel):
     user_id: int
 
 
-class ModifyAd(BaseModel):
+class ModifyPost(BaseModel):
     type: str | None = None
     price: int | None = None
     address: str | None = None
