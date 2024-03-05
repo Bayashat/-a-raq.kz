@@ -72,9 +72,19 @@ def post_comment(
 @router.get("/{id}/comments")
 def get_comment(
     id: int,
-    token: str = Depends(oath2_scheme),
     db: Session = Depends(get_db)
 ) -> CommentListResponse:
-    user_id = decode_jwt(token)
-    comments = comment_repository.get_comment(db, id, user_id)
+    comments = comment_repository.get_comment(db,id)
     return CommentListResponse(comments=[CommentResponse(id=c.id, content=c.content, user_id=c.user_id, ad_id=c.ad_id) for c in comments])
+
+@router.patch("/{id}/comments/{comment_id}")
+def update_comment(
+    id: int,
+    comment_id: int,
+    comment: AddComment,
+    token: str = Depends(oath2_scheme),
+    db: Session = Depends(get_db)
+):
+    user_id = decode_jwt(token)
+    comment_repository.update_comment(db,user_id, id, comment_id, comment)
+    return Response(content="Comment updated", status_code=200)
