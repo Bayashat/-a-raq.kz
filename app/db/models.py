@@ -1,9 +1,8 @@
 from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
-
 from app.db.base import Base
-
 from datetime import datetime
+import pytz
 
 class IdMixin:
     id = Column(Integer, primary_key=True)
@@ -43,7 +42,7 @@ class Ad(Base, IdMixin):
 class Comment(Base, IdMixin):
     __tablename__ = "comments"
     
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.now(pytz.timezone('Asia/Almaty')))
     content = Column(Text, nullable=False)
     
     # Foreign keys
