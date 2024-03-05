@@ -1,7 +1,9 @@
-from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
+
+from datetime import datetime
 
 class IdMixin:
     id = Column(Integer, primary_key=True)
@@ -17,6 +19,7 @@ class User(Base, IdMixin):
     city = Column(String, nullable=False)
     
     ads = relationship("Ad", back_populates="user")
+    comments = relationship("Comment", back_populates="user")
 
 class Ad(Base, IdMixin):
     __tablename__ = "ads"
@@ -32,5 +35,24 @@ class Ad(Base, IdMixin):
     # Foreign key to user
     user_id = Column(Integer, ForeignKey('users.id'))
     
-    # Define foreign key relationships
+    # Relationships
     user = relationship("User", back_populates="ads")
+    comments = relationship("Comment", back_populates="ad")
+    
+    
+class Comment(Base, IdMixin):
+    __tablename__ = "comments"
+    
+    created_at = Column(DateTime, default=datetime.utcnow)
+    content = Column(Text, nullable=False)
+    
+    # Foreign keys
+    user_id = Column(Integer, ForeignKey('users.id'))
+    ad_id = Column(Integer, ForeignKey('ads.id'))
+    
+    # Relationships
+    user = relationship("User", back_populates="comments")
+    ad = relationship("Ad", back_populates="comments")
+    
+    
+    
