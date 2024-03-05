@@ -3,11 +3,15 @@ from fastapi import APIRouter, Depends, Response
 from sqlalchemy.orm import Session
 
 from app.api.repositories.ads import AdRepository
+from app.api.repositories.comments import CommentRepository
 from app.api.serializers.ads import CreateAd, AdResponse, ModifyAd
+from app.api.serializers.comments import AddComment
+
 from .auth import oath2_scheme, decode_jwt, get_db
 
 router = APIRouter()
 ad_repository = AdRepository()
+comment_repository = CommentRepository()
 
 
 @router.post("/")
@@ -50,3 +54,16 @@ def delete_ad(
     user_id = decode_jwt(token)
     ad_repository.delete_ad(db, id, user_id)
     return Response(content=f"Ad with id {user_id} deleted")
+
+
+# Comments
+@router.post("/{id}/comments")
+def post_comment(
+    comment: AddComment,
+    id: int,
+    token: str = Depends(oath2_scheme),
+    db: Session = Depends(get_db)
+):
+    user_id = decode_jwt(token)
+    comment_repository.create_ad(db, user_id, id, comment)
+    return Response(content="Success", status_code=200)
