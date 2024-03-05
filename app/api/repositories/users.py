@@ -12,9 +12,10 @@ class UsersRepository:
     def create_user(db: Session, user_data: CreateUser) -> int:
         try: 
             # Try to query if the user already exists
-            existing_user = db.query(User).filter(User.username == user_data.username).first()
+            existing_user_email = db.query(User).filter(User.username == user_data.username).first()
+            existing_user_phone = db.query(User).filter(User.phone == user_data.phone).first()
             
-            if existing_user:
+            if existing_user_email or existing_user_phone:
                 raise HTTPException(status_code=400, detail="User already exists")
             
             # If the user does not exist, create a new user object and add it to the database
