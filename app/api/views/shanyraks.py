@@ -86,5 +86,18 @@ def update_comment(
     db: Session = Depends(get_db)
 ):
     user_id = decode_jwt(token)
-    comment_repository.update_comment(db,user_id, id, comment_id, comment)
+    comment_repository.update_comment(db, user_id, id, comment_id, comment)
     return Response(content="Comment updated", status_code=200)
+
+
+@router.delete("/{id}/comments/{comment_id}")
+def delete_comment(
+    id: int,
+    comment_id: int,
+    token: str = Depends(oath2_scheme),
+    db: Session = Depends(get_db)
+):
+    user_id = decode_jwt(token)
+    comment_repository.delete_comment(db, user_id, id, comment_id)
+    return Response(content="Comment deleted", status_code=200)
+    
