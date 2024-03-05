@@ -39,3 +39,14 @@ def update_ad(
 ):
     ad_repository.update_ad(db, id, ad_data)
     return Response(content="Ad updated", status_code=200)
+
+
+@router.delete("/{id}")
+def delete_ad(
+    id: int,
+    token: str = Depends(oath2_scheme),
+    db: Session = Depends(get_db)
+):
+    user_id = decode_jwt(token)
+    ad_repository.delete_ad(db, id, user_id)
+    return Response(content=f"Ad with id {user_id} deleted")
