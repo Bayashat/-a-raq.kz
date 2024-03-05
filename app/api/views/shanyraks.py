@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.api.repositories.ads import AdRepository
 from app.api.repositories.comments import CommentRepository
 from app.api.serializers.ads import CreateAd, AdResponse, ModifyAd
-from app.api.serializers.comments import AddComment
+from app.api.serializers.comments import AddComment, CommentResponse, CommentListResponse
 
 from .auth import oath2_scheme, decode_jwt, get_db
 
@@ -67,3 +67,14 @@ def post_comment(
     user_id = decode_jwt(token)
     comment_repository.create_comment(db, user_id, id, comment)
     return Response(content="Success", status_code=200)
+
+
+@router.get("/{id}/comments")
+def get_comment(
+    id: int,
+    token: str = Depends(oath2_scheme),
+    db: Session = Depends(get_db)
+) -> CommentListResponse:
+    user_id = decode_jwt(token)
+    comments = comment_repository.get_comment(db, id, user_id)
+    return CommentListResponse(comments=[CommentResponse(id=c.id, content=c.content, user_id=c.user_id, ad_id=c.ad_id) for c in comments])
