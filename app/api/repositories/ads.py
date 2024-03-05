@@ -33,13 +33,11 @@ class AdRepository:
         
     @staticmethod
     def get_ad(db: Session, ad_id: int):
-        try:
-            # try to query if the ad exist
-            db_ad = db.query(Ad).filter(Ad.id == ad_id).first()
-            return db_ad
-        except Exception as e:
-            db.rollback()
-            raise e
+        db_ad = db.query(Ad).filter(Ad.id == ad_id).first()
+        
+        if db_ad is None:
+            raise HTTPException(status_code=404, detail="Ad not found")
+        return db_ad
                 
             
     @staticmethod
@@ -58,3 +56,19 @@ class AdRepository:
         except IntegrityError:
             db.rollback()
             raise HTTPException(status_code=400, detail="Invalid ad data")
+    
+    
+    @staticmethod
+    def delete_ad(db: Session, ad_id: int, user_id: int):
+        db_ad = db.query(Ad).filter(Ad.id == ad_id).first()
+        
+        if db_ad is None: 
+            raise HTTPException(status_code=404, detail="Ad not found")
+        
+        try:
+            db.delete(db_ad)
+            db.commit()
+        except Exception as e:
+            raise e
+            
+            
