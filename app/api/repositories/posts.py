@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Session
 
-from app.db.models import Post
+from app.db.models import Post, Comment
 from sqlite3 import IntegrityError
-from app.api.serializers.posts import CreatePost, ModifyPost
+from app.api.serializers.posts import CreatePost, ModifyPost, PostResponse
 from fastapi import HTTPException
 
 
@@ -34,10 +34,11 @@ class PostRepository:
     @staticmethod
     def get_post(db: Session, post_id: int):
         db_post = db.query(Post).filter(Post.id == post_id).first()
-        
+        db_comments = db.query(Comment).filter(Comment.post_id == post_id).all()
+        db_comments_count = len(db_comments)
         if db_post is None:
             raise HTTPException(status_code=404, detail="Post not found")
-        return db_post
+        return db_post, db_comments_count
                 
             
     @staticmethod
