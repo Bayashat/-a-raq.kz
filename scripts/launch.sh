@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# Apply Alembic migrations
+alembic upgrade head
+
 # Set defaults if not provided in environment
 : "${MODULE_NAME:=app.main}"
 : "${VARIABLE_NAME:=app}"
