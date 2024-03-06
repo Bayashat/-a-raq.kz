@@ -9,7 +9,7 @@ COPY requirements.txt .
 
 # Create and activate a virtual environment
 RUN python3 -m venv .venv
-RUN /bin/bash -c "source .venv/bin/activate"
+RUN /bin/sh -c "source .venv/bin/activate"
 
 
 # Install any needed packages specified in requirements.txt
