@@ -52,6 +52,9 @@ class CommentRepository:
         if not user or not post:
             raise HTTPException(status_code=404, detail="Not found such User or Post")
 
+        if post.user_id != user_id:
+            raise HTTPException(status_code=403, detail="Forbidden")
+        
         db_comment = db.query(Comment).filter(
             Comment.user_id == user_id,
             Comment.post_id == post_id,
@@ -73,15 +76,14 @@ class CommentRepository:
         if not post or not comment:
             raise HTTPException(status_code=404, detail="Not found such post or comment")
         
+        if post.user_id != user_id:
+            raise HTTPException(status_code=403, detail="Forbidden")
         
         db_comment = db.query(Comment).filter(
             Comment.user_id == user_id,
             Comment.post_id == post_id,
             Comment.id == comment_id
             ).first()
-        
-        if db_comment is None:
-            raise HTTPException(status_code=404, detail="It's not your comment")
         
         try:
             db.delete(db_comment)
