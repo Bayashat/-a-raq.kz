@@ -1,5 +1,5 @@
 from jose import jwt
-
+from typing import List
 from fastapi import APIRouter, Form, Response, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 
@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.db.database import SessionLocal
 from app.db.models import User
 from app.api.repositories.users import UsersRepository
-from app.api.serializers.users import CreateUser, ModifyUser, UserReponse
+from app.api.serializers.users import CreateUser, ModifyUser, UserReponse, ShanyrakItem, FavoriteShanyrak
 
 router = APIRouter()
 users_repository = UsersRepository()
@@ -90,3 +90,13 @@ def add_favorite(
     users_repository.add_favorite(db, user_id, id)
     return Response(content="Success", status_code=200)
     
+
+@router.get("/users/favorites/shanyraks", response_model=FavoriteShanyrak)
+def get_favorites(
+    token: str = Depends(oath2_scheme),
+    db: Session = Depends(get_db)
+):
+    user_id = decode_jwt(token)
+    shanyraks = users_repository.get_favorite(db, user_id) 
+
+    return {"shanyraks": shanyraks}

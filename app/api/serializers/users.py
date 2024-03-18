@@ -1,5 +1,6 @@
 from pydantic import BaseModel, EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
+from typing import List
 
 
 
@@ -28,4 +29,12 @@ class UserReponse(BaseModel):
     name: str
     city: str
     favorites: str
+    
+class ShanyrakItem(BaseModel):
+    id: str
+    address: str
+    
+    
+class FavoriteShanyrak(BaseModel):
+    shanyraks: List[ShanyrakItem]
 

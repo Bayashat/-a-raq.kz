@@ -4,7 +4,7 @@ from sqlite3 import IntegrityError
 from sqlalchemy.orm import Session
 from app.db.models import User, Post
 
-from app.api.serializers.users import CreateUser, ModifyUser
+from app.api.serializers.users import CreateUser, ModifyUser, ShanyrakItem, FavoriteShanyrak
 
 
 class UsersRepository:
@@ -84,4 +84,17 @@ class UsersRepository:
                 db_user.favorites += f"{post_id},"
                 db.commit()
                 db.refresh(db_user)
+                        
                 
+    @staticmethod
+    def get_favorite(db: Session, user_id: int):
+        db_user = db.query(User).filter(User.id == user_id).first()
+        
+        if db_user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        favorites_list = db_user.favorites.split(",")[:-1]
+        favorite_posts = []
+        for id in favorites_list:
+            db_post = db.query(Post).filter(Post.id == id).first()
+            favorite_posts.append(ShanyrakItem(id=id, address=db_post.address))
+        return favorite_posts
