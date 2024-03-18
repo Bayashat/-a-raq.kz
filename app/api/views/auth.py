@@ -100,3 +100,13 @@ def get_favorites(
     shanyraks = users_repository.get_favorite(db, user_id) 
 
     return {"shanyraks": shanyraks}
+
+@router.delete("/users/favorites/shanyraks/{id}")
+def delete_favorite(
+    id: int,
+    token: str = Depends(oath2_scheme),
+    db: Session = Depends(get_db)
+):
+    user_id = decode_jwt(token)
+    users_repository.delete_favorite(db, user_id, id)
+    return Response(content="Success", status_code=200)

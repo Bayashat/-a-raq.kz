@@ -98,3 +98,18 @@ class UsersRepository:
             db_post = db.query(Post).filter(Post.id == id).first()
             favorite_posts.append(ShanyrakItem(id=id, address=db_post.address))
         return favorite_posts
+
+    
+    @staticmethod
+    def delete_favorite(db: Session, user_id: int, post_id: int):
+        db_user = db.query(User).filter(User.id == user_id).first()
+
+        if db_user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        else:
+            if str(post_id) in db_user.favorites:
+                db_user.favorites = db_user.favorites.replace(f"{post_id},", "")
+                db.commit()
+                db.refresh(db_user)
+            else:
+                raise HTTPException(status_code=404, detail="Post not found in favorites")
