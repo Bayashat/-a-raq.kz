@@ -39,7 +39,7 @@
 │   ├── README
 │   ├── script.py.mako
 │   └── versions
-│       ├── 5373a36b15a2_create_user_ad_comment_tables.py
+│       ├── 28076f42a5b1_create_tables.py
 ├── alembic.ini
 ├── app
 │   ├── api
@@ -124,11 +124,17 @@ The API will be available at http://127.0.0.1:8000.
 ### User Authentication
 * `POST /auth/users`: Register a new user.
 * `POST /auth/users/login`: Log in with email and password.
-* `GET/auth/users/me`: View user profile information.
-* `PATCH/auth/users/me`: Modify profile information.
+* `GET /auth/users/me`: View user profile information.
+* `PATCH /auth/users/me`: Modify profile information.
+* `POST /auth/users/favorites/shanyraks/{id}`: Add post to favorite
+* `DELETE /auth/users/favorites/shanyraks/{id}`: Delete post from favorite
+* `GET /auth/users/favorites/shanyraks`: Get list of favorite posts
+
+
 
 ### Property Listings
 * `POST /shanyraks`: Create a new property listing
+* `GET /shanyraks`: Get list of propersy listing
 * `GET /shanyraks/{id}`: Retrieve details of a property listing.
 * `PATCH /shanyraks/{id}`: Modify details of a property listing.
 * `DELETE /shanyraks/{id}`: Delete a property listing.
