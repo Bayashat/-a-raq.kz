@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from sqlite3 import IntegrityError
 from sqlalchemy.orm import Session
-from app.db.models import User
+from app.db.models import User, Post
 
 from app.api.serializers.users import CreateUser, ModifyUser
 
@@ -66,3 +66,22 @@ class UsersRepository:
             raise HTTPException(status_code=404, detail="User not found")
         else:
             return db_user
+        
+                
+    @staticmethod
+    def add_favorite(db: Session, user_id: int, post_id: int):
+        db_user = db.query(User).filter(User.id == user_id).first()
+        db_post = db.query(Post).filter(Post.id == post_id).first()
+
+        if db_user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        elif db_post is None:
+            raise HTTPException(status_code=404, detail="Post not found")
+        else:
+            if str(post_id) in db_user.favorites:
+                raise HTTPException(status_code=400, detail="Post already favorited")
+            else:
+                db_user.favorites += f"{post_id},"
+                db.commit()
+                db.refresh(db_user)
+                

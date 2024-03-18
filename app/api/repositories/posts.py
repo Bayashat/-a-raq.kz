@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 
 from app.db.models import Post, Comment
 from sqlite3 import IntegrityError
-from app.api.serializers.posts import CreatePost, ModifyPost, PostResponse
+from app.api.serializers.posts import CreatePost, ModifyPost
 from fastapi import HTTPException
 
 
@@ -77,5 +77,4 @@ class PostRepository:
             db.commit()
         except Exception as e:
             raise e
-            
             

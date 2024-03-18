@@ -78,3 +78,15 @@ def get_user(token: str = Depends(oath2_scheme), db: Session = Depends(get_db)):
     user.phone = user.phone[4:].replace("-", " ")
     
     return UserReponse.model_validate(user.__dict__)
+
+
+@router.post("/users/favorites/shanyraks/{id}")
+def add_favorite(
+    id: int,
+    token: str = Depends(oath2_scheme),
+    db: Session = Depends(get_db)
+):
+    user_id = decode_jwt(token)
+    users_repository.add_favorite(db, user_id, id)
+    return Response(content="Success", status_code=200)
+    

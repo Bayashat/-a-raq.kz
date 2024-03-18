@@ -17,6 +17,9 @@ class User(Base, IdMixin):
     name = Column(String, nullable=False)
     city = Column(String, nullable=False)
     
+    favorites = Column(String, nullable=False)
+
+    
     posts = relationship("Post", back_populates="user")
     comments = relationship("Comment", back_populates="user")
 

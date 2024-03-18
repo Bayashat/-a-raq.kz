@@ -114,4 +114,3 @@ def delete_comment(
     user_id = decode_jwt(token)
     comment_repository.delete_comment(db, user_id, id, comment_id)
     return Response(content="Comment deleted", status_code=200)
-    
