@@ -28,7 +28,6 @@ def post_post(
 @router.get("/{id}")
 def get_post(
     id: int,
-    token: str = Depends(oath2_scheme),
     db: Session = Depends(get_db)
 ) -> PostResponse:
     db_post, db_comments_count = post_repository.get_post(db, id)
@@ -86,7 +85,6 @@ def post_comment(
 @router.get("/{id}/comments")
 def get_comment(
     id: int,
-    token: str = Depends(oath2_scheme),
     db: Session = Depends(get_db)
 ) -> CommentListResponse:
     comments = comment_repository.get_comment(db,id)
