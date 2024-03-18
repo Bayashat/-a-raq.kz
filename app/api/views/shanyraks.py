@@ -25,25 +25,14 @@ def post_post(
     return {"id": str(post_id)}
     
 
-@router.get("/{id}")
+@router.get("/{id}", response_model=PostResponse)
 def get_post(
     id: int,
     db: Session = Depends(get_db)
-) -> PostResponse:
+):
     db_post, db_comments_count = post_repository.get_post(db, id)
 
-    response = PostResponse(
-        id = db_post.id,
-        type = db_post.type,
-        price = db_post.price,
-        address = db_post.address,
-        area = db_post.area,
-        rooms_count = db_post.rooms_count,
-        description = db_post.description,
-        user_id = db_post.user_id,
-        total_comments = db_comments_count
-    )
-    
+    response = PostResponse(**db_post.__dict__, total_comments=db_comments_count)
     return response
 
 
