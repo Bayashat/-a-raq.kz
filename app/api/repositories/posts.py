@@ -14,7 +14,13 @@ class PostRepository:
             # Try to query if the user already has this post:
             existing_post = db.query(Post).filter(
                 Post.user_id == user_id,
-                Post.type == post_data.type,).first()
+                Post.type == post_data.type,
+                Post.price == post_data.price,
+                Post.address == post_data.address,
+                Post.area == post_data.area,
+                Post.rooms_count == post_data.rooms_count,
+                Post.description == post_data.description,
+            ).first()
 
             if existing_post:
                 raise HTTPException(status_code=400, detail="Post already exists")
@@ -78,3 +84,14 @@ class PostRepository:
         except Exception as e:
             raise e
             
+
+    @staticmethod
+    def get_posts(db: Session, limit: int, offset: int, type: str, rooms_count: int, price_from: int, price_until: int):
+        db_posts = db.query(Post).filter(
+            Post.type == type,
+            Post.rooms_count == rooms_count,
+            Post.price > price_from,
+            Post.price < price_until
+        ).limit(limit).offset(offset).all()
+
+        return db_posts

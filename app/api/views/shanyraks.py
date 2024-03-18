@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 
 from app.api.repositories.posts import PostRepository
 from app.api.repositories.comments import CommentRepository
-from app.api.serializers.posts import CreatePost, PostResponse, ModifyPost
+from app.api.serializers.posts import CreatePost, PostResponse, ModifyPost, SearchResultResponse, SearchResponse
 from app.api.serializers.comments import AddComment, CommentResponse, CommentListResponse
 
 from .auth import oath2_scheme, decode_jwt, get_db
@@ -114,3 +114,17 @@ def delete_comment(
     user_id = decode_jwt(token)
     comment_repository.delete_comment(db, user_id, id, comment_id)
     return Response(content="Comment deleted", status_code=200)
+
+
+@router.get("/", response_model=SearchResultResponse)
+def get_posts(
+    db: Session = Depends(get_db),
+    limit: int = 10,
+    offset: int = 0,
+    type: str = "rent",
+    rooms_count: int = 2,
+    price_from: int = 0,
+    price_until: int = 300000
+):
+    posts = post_repository.get_posts(db, limit, offset, type, rooms_count, price_from, price_until)
+    return SearchResultResponse(total=len(posts), objects=[SearchResponse.model_validate(post.__dict__) for post in posts])
