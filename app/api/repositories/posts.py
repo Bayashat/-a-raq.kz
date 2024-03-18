@@ -42,12 +42,15 @@ class PostRepository:
                 
             
     @staticmethod
-    def update_post(db: Session, post_id: int, post_data: ModifyPost):
+    def update_post(db: Session, post_id: int, user_id: int, post_data: ModifyPost):
         db_post = db.query(Post).filter(Post.id == post_id).first()
         
         if db_post is None:
             raise HTTPException(status_code=404, detail="Post not found")
         else:
+            if db_post.user_id != user_id:
+                raise HTTPException(status_code=403, detail="Forbidden")
+            
             for key, value in post_data.model_dump(exclude_unset=True).items():
                 setattr(db_post, key, value)
                 
@@ -65,6 +68,9 @@ class PostRepository:
         
         if db_post is None: 
             raise HTTPException(status_code=404, detail="Post not found")
+        
+        if db_post.user_id != user_id:
+            raise HTTPException(status_code=403, detail="Forbidden")
         
         try:
             db.delete(db_post)

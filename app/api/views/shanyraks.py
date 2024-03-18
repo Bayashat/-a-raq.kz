@@ -54,7 +54,8 @@ def update_post(
     token: str = Depends(oath2_scheme),
     db: Session = Depends(get_db)
 ):
-    post_repository.update_post(db, id, post_data)
+    user_id = int(decode_jwt(token))
+    post_repository.update_post(db, id, user_id, post_data)
     return Response(content="Post updated", status_code=200)
 
 
